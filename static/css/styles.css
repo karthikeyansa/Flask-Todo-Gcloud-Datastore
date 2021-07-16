@@ -1,0 +1,38 @@
+#container1{
+    display: inline-block;
+    left: 35%;
+    right: 35%;
+    position: absolute;
+    overflow: auto;
+    height: 180px;
+    width: 30%;
+}
+#ongoingTasks{
+    display: grid;
+    grid-row: auto;
+    grid-template-rows:  auto auto auto auto auto;
+    grid-template-columns: 100%;
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    position: absolute;
+    text-align: center;
+    grid-gap: 5px;
+}
+#completedTasks{
+    display: grid;
+    grid-row: auto;
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-columns: 100%;
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    position: absolute;
+    text-align: center;
+    grid-gap: 5px;
+}
+.taskContent{
+    text-align: start;
+    padding: 1px;
+    border-style: outset;
+}
