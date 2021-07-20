@@ -1,11 +1,78 @@
+.myform{
+    display: block; 
+    left: 44%;
+    right: 20%; 
+    width: 60%;
+    position: absolute;
+}
+.alert-danger{
+    background-color: rgb(255, 110, 110);
+    color: white;
+    padding: 5px 5px 5px;
+}
+
+.alert-primary{
+    background-color: rgb(102, 217, 255);
+    color: white;
+    padding: 5px 5px 5px;
+}
+
+.alert-success{
+    background-color: lightgreen;
+    color: white;
+    padding: 5px 5px 5px;
+}
+
+.alerts{
+    display: none;
+    height: 35px;
+    left: 20%;
+    right: 20%;
+    width: 60%;
+    color: black;
+    text-align: center;
+    position: absolute;
+}
+.text-editor{
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 200px;
+    display: inline-block;
+}
+
+.task-status{
+    cursor: pointer;
+    right: 10px;
+    position: absolute;
+}
+.update-btn{
+    text-align: center;
+    padding: 3px 3px 3px;
+    background-color: rgb(61, 129, 255);
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+    
+}
+.cancel-btn{
+    text-align: center;
+    padding: 3px 3px 3px;
+    background-color: rgb(255, 61, 61);
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
 #container1{
     display: inline-block;
-    left: 35%;
-    right: 35%;
+    left: 30%;
+    right: 30%;
     position: absolute;
     overflow: auto;
-    height: 180px;
-    width: 30%;
+    height: 201px;
+    width: 40%;
 }
 #ongoingTasks{
     display: grid;

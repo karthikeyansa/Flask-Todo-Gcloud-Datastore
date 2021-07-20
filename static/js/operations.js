@@ -1,6 +1,14 @@
 var taskCountKeeper = {"incomplete": 0, "complete": 0};
 var editingContent = {};
 
+var taskContext = document.getElementById("content");
+taskContext.addEventListener("keyup", function(event){
+    if(event.keyCode === 13){
+        event.preventDefault();
+        document.getElementById("submit").click();
+    }
+})
+
 async function fetchTodolist(url, requestSettings){
     try{
         let request = await fetch(url, requestSettings);
@@ -46,10 +54,16 @@ async function createtablebody(response) {
     if(todos.length){
         todos.forEach((todo, idx) => {
         if(todo.status === false){
-            ongoing.innerHTML += `<div class=taskContent id=content${todo.id}><span onclick=editor(${todo.id})>${todo.content}</span>&nbsp<span style=right:1px;position:absolute; id=statusUpdate${todo.id} onclick=statusUpdator(${todo.id})>❌</span></div>`
+            ongoing.innerHTML += `<div class=taskContent id=content${todo.id}>
+                                  <span class=text-editor title='click to edit' onclick=editor(${todo.id})>${todo.content}</span>&nbsp
+                                  <span class=task-status title='Ongoing' id=statusUpdate${todo.id} onclick=statusUpdator(${todo.id})>❌</span>
+                                  </div>`
         }
         if(todo.status === true){
-            completed.innerHTML += `<div class=taskContent id=content${todo.id}><span onclick=editor(${todo.id})>${todo.content}</span>&nbsp<span style=right:1px;position:absolute; id=deleteTask${todo.id} onclick=deleteTask(${todo.id})>✔</span></div>`
+            completed.innerHTML += `<div class=taskContent id=content${todo.id}>
+                                    <span class=text-editor title='click to edit' onclick=editor(${todo.id})>${todo.content}</span>&nbsp
+                                    <span class=task-status title='Completed' id=deleteTask${todo.id} onclick=deleteTask(${todo.id})>✔</span>
+                                    </div>`
         }
         });
     }
@@ -65,7 +79,10 @@ async function Addtask() {
             let addedTaskResponse = await fetchTodolist("/v1/todos/task", requestSettings);
             if(addedTaskResponse.success){
                 var ongoing = document.getElementById("ongoingTasks");
-                ongoing.insertAdjacentHTML("afterbegin",`<div class=taskContent id=content${addedTaskResponse.new_task.id}><span onclick=editor(${addedTaskResponse.new_task.id})>${addedTaskResponse.new_task.content}</span>&nbsp<span style=right:1px;position:absolute; id=statusUpdate${addedTaskResponse.new_task.id} onclick=statusUpdator(${addedTaskResponse.new_task.id})>❌</span></div>`);
+                ongoing.insertAdjacentHTML("afterbegin",`<div class=taskContent id=content${addedTaskResponse.new_task.id}>
+                                                         <span class=text-editor onclick=editor(${addedTaskResponse.new_task.id})>${addedTaskResponse.new_task.content}</span>
+                                                         <span class=task-status title='Ongoing' id=statusUpdate${addedTaskResponse.new_task.id} onclick=statusUpdator(${addedTaskResponse.new_task.id})>❌</span>
+                                                         </div>`);
                 taskCountKeeper["incomplete"] += 1;
                 var incomplete = document.getElementById("incomplete");
                 incomplete.innerHTML = `Ongoing Tasks(${taskCountKeeper["incomplete"]})`;
@@ -79,7 +96,11 @@ async function Addtask() {
         }
     }
     else{
-        alert("Kindly fill the task description");
+        let alert = document.getElementById("alerts");
+        alert.style.display = "block";
+        alert.className = "alert-danger alerts"
+        alert.innerHTML = "Task context cannot be empty.";
+        setTimeout(() => {alert.style.display = "none"}, 3000)
     }   
 }
 
@@ -91,7 +112,10 @@ async function statusUpdator(id){
         let updatedTaskResponse = await fetchTodolist(`/v1/todos/statusupdate/${id}`, {"method": "PUT", "headers": {"Content-Type": "application/json"}});
         if(updatedTaskResponse.success){
             var completedTasks = document.getElementById("completedTasks");
-            completedTasks.insertAdjacentHTML("afterbegin", `<div class=taskContent id=content${id}><span onclick=editor(${id})>${updatedTaskResponse.task.content}</span>&nbsp<span style=right:1px;position:absolute; id=deleteTask${id} onclick=deleteTask(${id})>✔</span></div>`);
+            completedTasks.insertAdjacentHTML("afterbegin", `<div class=taskContent id=content${id}>
+                                                             <span class=text-editor onclick=editor(${id})>${updatedTaskResponse.task.content}</span>&nbsp
+                                                             <span class=task-status title='Completed' id=deleteTask${id} onclick=deleteTask(${id})>✔</span>
+                                                             </div>`);
             taskCountKeeper["incomplete"] -= 1;
             var incomplete = document.getElementById("incomplete");
             incomplete.innerHTML = `Ongoing Tasks(${taskCountKeeper["incomplete"]})`;
@@ -131,32 +155,87 @@ function editor(id){
     // Function to edit the selected task.
 
     var editTask = document.getElementById(`content${id}`);
-    editingContent["content"] = editTask.getElementsByTagName("span")[0].textContent;
-    editingContent["status"] = editTask.getElementsByTagName("span")[1].textContent;
-    editTask.innerHTML = `<div id=content${id}><input type=text id=editingContent${id} value='${editingContent["content"]}'/> <span class='btn btn-sm btn-primary' onclick=updateContent(${id})>Update</span></div>`
+    editingContent[`content${id}`] = editTask.getElementsByTagName("span")[0].textContent;
+    editingContent[`status${id}`] = editTask.getElementsByTagName("span")[1].textContent;
+    editTask.innerHTML = `<div id=content${id}>
+                          <input type=text id=editingContent${id} value='${editingContent[`content${id}`]}'/>
+                          <span class='update-btn' id=updatebutton${id} onclick=updateContent(${id})>Update</span>
+                          <span class='cancel-btn' onclick='updateContent(${id}, noUpdate=true)'>Cancel</span>
+                          </div>`
+    
+    var taskContext = document.getElementById(`editingContent${id}`);
+    taskContext.addEventListener("keyup", function(event){
+        if(event.keyCode === 13){
+            event.preventDefault();
+            document.getElementById(`updatebutton${id}`).click();
+        }
+    })                 
 }
 
-async function updateContent(id){
+async function updateContent(id, noUpdate=false){
     // Function to update the edited context.
     var content = document.getElementById(`editingContent${id}`).value;
     var todocolumn = document.getElementById(`content${id}`);
-    if(content.length && content !== editingContent['content']){
+    if(noUpdate === true){
+        if(editingContent['status'] === "❌"){
+            todocolumn.innerHTML = `<div id=content${id}>
+                                    <span class=text-editor onclick=editor(${id})>${editingContent[`content${id}`]}</span>
+                                    <span class=task-status title='Ongoing' id=statusUpdate${id} onclick=statusUpdator(${id})>${editingContent[`status${id}`]}</span>
+                                    </div>`;
+        }
+        else{
+            todocolumn.innerHTML = `<div id=content${id}>
+                                    <span class=text-editor onclick=editor(${id})>${editingContent[`content${id}`]}</span>
+                                    <span class=task-status title='Completed' id=statusUpdate${id} onclick=statusUpdator(${id})>${editingContent[`status${id}`]}</span>
+                                    </div>`;
+        }
+        delete editingContent.content;
+        delete editingContent.status;
+    }
+    else if(content.length && content !== editingContent[`content${id}`]){
         let requestSettings = {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"content": content})};
         let updatedTaskContent = await fetchTodolist(`/v1/todos/${id}`, requestSettings);
         if(updatedTaskContent.success){
             if(updatedTaskContent.task.status === false){
-                todocolumn.innerHTML = `<div id=content${id}><span onclick=editor(${id})>${content}</span>&nbsp<span style=right:1px;position:absolute; id=statusUpdate${id} onclick=statusUpdator(${id})>❌</span></div>`
+                todocolumn.innerHTML = `<div id=content${id}>
+                                        <span class=text-editor onclick=editor(${id})>${content}</span>
+                                        <span class=task-status title='Ongoing' id=statusUpdate${id} onclick=statusUpdator(${id})>❌</span>
+                                        </div>`
             }
             else if(updatedTaskContent.task.status === true){
-                todocolumn.innerHTML = `<div id=content${id}><span onclick=editor(${id})>${content}</span>&nbsp<span style=right:1px;position:absolute; id=deleteTask${id} onclick=deleteTask(${id})>✔</span></div>`
+                todocolumn.innerHTML = `<div id=content${id}>
+                                        <span class=text-editor onclick=editor(${id})>${content}</span>
+                                        <span class=task-status title='Completed' id=deleteTask${id} onclick=deleteTask(${id})>✔</span>
+                                        </div>`
             }
+        let alert = document.getElementById("alerts");
+        alert.style.display = "block";
+        alert.className = "alert-success alerts"
+        alert.innerHTML = "Task \""+ editingContent[`content${id}`] +"\" updated";
+        setTimeout(() => {alert.style.display = "none"}, 2000)
         delete editingContent.content;
         delete editingContent.status;
         }
     }
     else{
-        alert("Task name is empty or same context is found");
-        todocolumn.innerHTML = `<div id=content${id}><span onclick=editor(${id})>${editingContent['content']}</span>&nbsp<span style=right:1px;position:absolute; id=statusUpdate${id} onclick=statusUpdator(${id})>${editingContent['status']}</span></div>`;
+        let alert = document.getElementById("alerts");
+        alert.style.display = "block";
+        alert.className = "alert-danger alerts"
+        alert.innerHTML = "Empty task or same task is found, no changes were made.";
+        setTimeout(() => {alert.style.display = "none"}, 3000)
+        if(editingContent['status'] === "❌"){
+            todocolumn.innerHTML = `<div id=content${id}>
+                                    <span class=text-editor onclick=editor(${id})>${editingContent[`content${id}`]}</span>
+                                    <span class=task-status title='Ongoing' id=statusUpdate${id} onclick=statusUpdator(${id})>${editingContent[`status${id}`]}</span>
+                                    </div>`;
+        }
+        else{
+            todocolumn.innerHTML = `<div id=content${id}>
+                                    <span class=text-editor onclick=editor(${id})>${editingContent[`content${id}`]}</span>
+                                    <span class=task-status title='Completed' id=statusUpdate${id} onclick=statusUpdator(${id})>${editingContent[`status${id}`]}</span>
+                                    </div>`;
+
+        }
         delete editingContent.content;
         delete editingContent.status;
     }    
