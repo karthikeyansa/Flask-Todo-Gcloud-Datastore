@@ -1,5 +1,8 @@
 runtime: python37
 
+manual_scaling:
+ instances: 1
+
 handlers:
 - url: /static
   static_dir: static
