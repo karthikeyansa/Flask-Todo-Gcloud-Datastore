@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>
+    Register - Todo APP
+</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
+{% block body %}
+<br/>
+<h1 style="text-align: center;">Todo App</h1>
+
+<div style="display: block; height: 25px;"></div>
+<div class="alert-danger alerts" id="alerts"></div>
+<div style="display: block; height: 45px;"></div>
+<div class="myform">
+    Email<div style="display: block;"></div><input type="email" class="input" id="email" name="email" required />
+    <br/>
+    Password<div style="display: block;"></div><input type="password" class="input" id="password" name="password" required/>
+    <br/>
+    Confirm Password<div style="display: block;"></div><input type="password" class="input" id="confirmpassword" name="confirmpassword" required/>
+    <div style="display: block;" id="passwordAlerts"></div>
+    <div style="display: block; height: 10px;"></div>
+    <button onclick="validateAndRegister()" id="submit" class="btn btn-warning">Register</button>
+</div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<div style="display: block; height: 250px;"></div>
+<h3 style="text-align:center;">Already have an account <a href="{{ url_for('login') }}">Login</a></h3>
+{% endblock %}
