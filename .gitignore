@@ -1,1 +1,6 @@
-.venv
+venv/
+firstscript.py
+app.py
+__pycache__/
+configuration/config.py
+DATA-DIR
