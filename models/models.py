@@ -10,6 +10,7 @@ class Tasks(ndb.Model):
    task_id = ndb.IntegerProperty(default=0)
    description = ndb.TextProperty()
    status = ndb.BooleanProperty(default=False)
+   timestamp = ndb.DateTimeProperty(auto_now_add=True)
 
 
 class Notes(ndb.Model):
