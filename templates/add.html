@@ -8,7 +8,9 @@
 
 {% block body %}
 <br/>
-<h4 style="text-align: center;">Welcome back <span style="color: blue;">{{ user_name }}</span></h4>
+<h4 style="text-align: center;">Welcome back 
+    <a style="color: blue;cursor: pointer;" href="{{ url_for('profile') }}">{{ user_name }}</a>
+</h4>
 <button onclick="logoutUser()"class="danger-btn" style="right: 10%;position: absolute;">Logout</button>
  
 <div style="display: block; height: 25px;"></div>
@@ -23,7 +25,7 @@
             <span id="span1" class="spanClose" onclick="inputAndSpanRemover(1)">❌</span>
         </div>
         <br/>
-        <button onclick="AddNote()"class="primary-btn" id="submit" title="click to add to notes">➕Add to notes</button>
+        <button class="primary-btn" id="submit" title="click to add to notes">➕Add to notes</button>
     </div>
     <div style="display: block;height: 50px;"></div>
     <div id="modal" class="modal"></div>

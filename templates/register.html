@@ -15,14 +15,14 @@
 <div class="alert-danger alerts" id="alerts"></div>
 <div style="display: block; height: 45px;"></div>
 <div class="myform">
-    Email<div style="display: block;"></div><input type="email" class="input" id="email" name="email" required />
+    Email<div style="display: block;"></div><input type="email" class="input" id="registerEmail" name="email" required />
     <br/>
-    Password<div style="display: block;"></div><input type="password" class="input" id="password" name="password" required/>
+    Password<div style="display: block;"></div><input type="password" class="input" id="registerPassword" name="password" required/>
     <br/>
-    Confirm Password<div style="display: block;"></div><input type="password" class="input" id="confirmpassword" name="confirmpassword" required/>
+    Confirm Password<div style="display: block;"></div><input type="password" class="input" id="confirmPassword" name="confirmpassword" required/>
     <div style="display: block;" id="passwordAlerts"></div>
     <div style="display: block; height: 10px;"></div>
-    <button onclick="validateAndRegister()" id="submit" class="btn btn-warning">Register</button>
+    <button  id="registerSubmit" class="btn btn-warning">Register</button>
 </div>
 
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>

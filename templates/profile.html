@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block head %}
+<title>Profile</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
+{% block body %}
+<div style="top: 50px; left: 10px; position: absolute;">
+    <h1>Hello <span style="color: blue;">{{ user_name }}</span></h1>
+    <div style="display: block;border: 1px solid black;height: 130px;width: 66%;padding: 10px 12px 9px 16px;">
+        <h3>
+            To delete all the user-data (profile, Notes) click the below button.
+        </h3>
+        <button class="primary-btn" style="color: white;" onclick="deleteUser()">DELETE ALL</button>
+        <button class="danger-btn" style="color: white;" onclick="window.location.href = '/notes'">Cancel</button>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/operations.js') }}"></script>
+{% endblock %}
