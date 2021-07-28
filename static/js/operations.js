@@ -8,10 +8,17 @@ input.addEventListener("keydown", function (event) {
         taskadder();
     }
     else if (event.keyCode == 13 && event.shiftKey) {
-        this.value += "\n";
+        this.style.cssText = "height:50px;"
         return false;
     }
 })
+
+let sendnote = document.getElementById("submit");
+sendnote.addEventListener("click", function(){
+    this.setAttribute("disabled", true);
+    AddNote();
+})
+
 
 async function fetchTodoList() {
     try {
@@ -66,20 +73,31 @@ async function modelRender(result) {
     //count
     var taskCounterKeeper = { ongoing: 0, completed: 0 };
     // title modal
-    let title = document.createElement("input");
+    let title = document.createElement("textarea");
     title.setAttribute("id", `modalTitle${result.id}`);
-    title.setAttribute("class", "modalTitle");
+    title.setAttribute("class", "modalTextarea");
     title.setAttribute("placeholder", "Title")
     title.style.cssText = "background-color:black;color:white;";
     title.value = result.content;
-    title.addEventListener("keydown", function (event) {
-        if (event.keyCode === 13 && title.value !== "") {
+    title.addEventListener("change", function (event) {
+        if (this.value !== "") {
             event.preventDefault();
-            title.blur();
+            this.blur();
             updateNoteTitle(note_id = result.id, value = title.value);
-
+        }
+        else if (event.keyCode === 13) {
+            this.style.height = `${this.scrollHeight}px`;
+            return false;
         }
     })
+    title.addEventListener("click", function(){
+        this.style.height = `${this.scrollHeight}px`;
+        this.selectionStart = this.selectionEnd = this.value.length;
+    })
+    title.addEventListener("blur", function(){
+        this.style.cssText = "height:40px";
+    })
+
     maingrid.appendChild(title);
     modal.appendChild(maingrid);
     // end title
@@ -98,28 +116,29 @@ async function modelRender(result) {
 
     let inputTextarea = document.createElement("textarea");
     inputTextarea.placeholder = "List item";
-    inputTextarea.style.cssText = "width:90%;background-color:black;color:white;"
+    inputTextarea.className = "modalTextarea";
     inputTextarea.id = "taskmodal1";
-    inputTextarea.className = "textarea";
-    inputTextarea.addEventListener("keydown", function (event) {
-        if (event.keyCode === 13 && !event.shiftKey) {
-            event.preventDefault();
+    inputTextarea.style.cssText = "width:100%;border-width: 0 0 1px;border-color: blue;"
+    inputTextarea.addEventListener("change", function (event) {
             if (inputTextarea.value !== "") {
+                event.preventDefault();
                 sendToTaskAdder(note_id = result.id, value = inputTextarea.value);
-                inputTextarea.value = "";
+                this.value = "";
+                return false;
             }
-            return false;
-        }
-        else if (event.keyCode === 13 && event.shiftKey) {
-            inputTextarea.value += "\n";
-            return false;
-        }
+            else if (event.keyCode === 13) {
+                this.style.height = `50px`;
+                return false;
+            }
     })
-
+    inputTextarea.addEventListener("blur", function(){
+        this.style.cssText = "height:40px";
+    })
+    
     let spanarea = document.createElement("span");
     spanarea.id = "spanmodal1";
     spanarea.innerText = "🗑️";
-    spanarea.style.cssText = "color: white;cursor: pointer;font-size: x-large;"
+    spanarea.style.cssText = "color: white;cursor: pointer;font-size: xx-large;text-align:center;"
     spanarea.addEventListener("click", function (event) {
         event.preventDefault();
         inputTextarea.value = "";
@@ -128,7 +147,7 @@ async function modelRender(result) {
     })
 
     let addNewTaskDiv = document.createElement("div");
-    addNewTaskDiv.className = "inputTask";
+    addNewTaskDiv.className = "modalNewItem"
     addNewTaskDiv.appendChild(inputTextarea);
     addNewTaskDiv.appendChild(spanarea);
 
@@ -154,16 +173,24 @@ async function modelRender(result) {
             let taskdesc = document.createElement("textarea");
             taskdesc.value = element.description;
             taskdesc.setAttribute("id", `taskdescid${element.task_id}`)
-            taskdesc.style.cssText = "background-color:black;color:white;height:50px;resize:none;border-radius:5px;line-height: 15px;";
-            taskdesc.addEventListener("keydown", function (event) {
-                if (event.keyCode === 13 && taskdesc.value !== "" && !event.shiftKey) {
+            taskdesc.className = "modalTextarea";
+            taskdesc.addEventListener("change", function (event){
+                if (taskdesc.value !== "") {
                     event.preventDefault();
                     taskdesc.blur();
                     updateTododesc(note_id = result.id, todo_id = element.task_id, value = taskdesc.value);
                 }
-                else if (event.keyCode === 13 && event.shiftKey) {
-                    taskdesc.value += "\n";
+                else if (event.keyCode === 13) {
+                    this.style.height = `${this.scrollHeight}px`;
+                    return false;
                 }
+            })
+            taskdesc.addEventListener("click", function(){
+                this.style.height = `${this.scrollHeight}px`;
+                this.selectionStart = this.selectionEnd = this.value.length;
+            })
+            taskdesc.addEventListener("blur", function(){
+                this.style.cssText = "height:40px";
             })
             let trash = document.createElement("div");
             trash.innerText = "🗑️"
@@ -181,19 +208,27 @@ async function modelRender(result) {
             checker.className = "modalIcon";
             checker.setAttribute("id", `checkerid${element.task_id}`)
             checker.setAttribute("onclick", `checkerfunct(note_id=${result.id}, task_id=${element.task_id}, status='✔')`);
-            let taskdesc = document.createElement("input");
+            let taskdesc = document.createElement("textarea");
             taskdesc.value = element.description;
             taskdesc.setAttribute("id", `taskdescid${element.task_id}`)
-            taskdesc.style.cssText = "background-color:black;color:white;height:50px;resize:none;border-radius:5px;line-height: 15px;";
+            taskdesc.className = "modalTextarea";
             taskdesc.addEventListener("keydown", function (event) {
-                if (event.keyCode === 13 && taskdesc.value !== "" && !event.shiftKey) {
+                if (taskdesc.value !== "") {
                     event.preventDefault();
                     taskdesc.blur();
                     updateTododesc(note_id = result.id, todo_id = element.task_id, value = taskdesc.value);
                 }
-                else if (event.keyCode === 13 && event.shiftKey) {
-                    taskdesc.value += "\n";
+                else if (event.keyCode === 13) {
+                    this.style.height = `${this.scrollHeight}px`;
+                    return false;
                 }
+            })
+            taskdesc.addEventListener("click", function(){
+                this.style.height = `${this.scrollHeight}px`;
+                this.selectionStart = this.selectionEnd = this.value.length;
+            })
+            taskdesc.addEventListener("blur", function(){
+                this.style.cssText = "height:40px";
             })
             let trash = document.createElement("div");
             trash.innerText = "🗑️"
@@ -273,16 +308,24 @@ async function sendToTaskAdder(note_id, value) {
                 let taskdesc = document.createElement("textarea");
                 taskdesc.value = value;
                 taskdesc.setAttribute("id", `taskdescid${element.task_id}`)
-                taskdesc.style.cssText = "background-color:black;color:white;height:50px;resize:none;border-radius:5px;line-height: 15px;";
-                taskdesc.addEventListener("keydown", function (event) {
-                    if (event.keyCode === 13 && taskdesc.value !== "" && !event.shiftKey) {
+                taskdesc.className = "modalTextarea"
+                taskdesc.addEventListener("change", function (event){
+                    if (taskdesc.value !== "") {
                         event.preventDefault();
                         taskdesc.blur();
-                        updateTododesc(note_id = response.result.id, todo_id = element.task_id, value = taskdesc.value);
+                        updateTododesc(note_id = result.id, todo_id = element.task_id, value = taskdesc.value);
                     }
-                    else if (event.keyCode === 13 && event.shiftKey) {
-                        taskdesc.value += "\n";
+                    else if (event.keyCode === 13) {
+                        this.style.height = `${this.scrollHeight}px`;
+                        return false;
                     }
+                })
+                taskdesc.addEventListener("click", function(){
+                    this.style.height = `${this.scrollHeight}px`;
+                    this.selectionStart = this.selectionEnd = this.value.length;
+                })
+                taskdesc.addEventListener("blur", function(){
+                    this.style.cssText = "height:40px";
                 })
                 let trash = document.createElement("div");
                 trash.innerText = "🗑️"
@@ -530,7 +573,8 @@ function taskadder() {
     task_array.push(task_counter['counter'])
     if (task_array.length >= 5) {
         let maingrid = document.getElementById("maingrid");
-        maingrid.style.height = "53%";
+        maingrid.style.height = "40%";
+        maingrid.scrollTop = maingrid.scrollHeight;
     }
 
     let inputBox = document.createElement("textarea");
@@ -557,7 +601,7 @@ function taskadder() {
             taskadder();
         }
         else if (event.keyCode == 13 && event.shiftKey) {
-            this.value += "\n";
+            this.style.cssText = "height:50px;"
             return false;
         }
     })
@@ -653,50 +697,73 @@ async function AddNote() {
                                              <span>Status: ❌Ongoing(${inCompletedTasks}) ✔Completed(${completedTasks})</span>`
                 displaycell.appendChild(deatailArea);
                 displaygrid.insertAdjacentElement("afterbegin", displaycell);
+
+                let title = document.getElementById('content');
+                title.value = "";
+                let inputTasks = document.getElementById("inputTask");
+                task_array.splice(0, task_array.length);
+                task_counter['counter'] = 1;
+                task_array = [1];
+
+                let textarea = document.createElement("textarea");
+                textarea.type = "text";
+                textarea.className = "textarea";
+                textarea.placeholder = 'List item';
+                textarea.setAttribute("id", 'task1');
+
+                let spanClose = document.createElement("span");
+                spanClose.setAttribute("id", "span1");
+                spanClose.className = "spanClose";
+                spanClose.setAttribute("onclick", "inputAndSpanRemover(1)");
+                spanClose.textContent = "❌";
+
+                textarea.addEventListener("keydown", function (event) {
+                    if (event.keyCode == 13 && !event.shiftKey) {
+                        event.preventDefault();
+                        taskadder();
+                    }
+                    else if (event.keyCode == 13 && event.shiftKey) {
+                        this.value += "\n";
+                        return false;
+                    }
+                })
+                inputTasks.innerHTML = ""
+                inputTasks.appendChild(textarea);
+                inputTasks.appendChild(spanClose);
+                let maingrid = document.getElementById("maingrid");
+                maingrid.style.height = "auto";
+                console.log("done");
             }
+        }else{
+            let alerts = document.getElementById("alerts");
+            alerts.style.display = "block";
+            alerts.innerHTML = "<span>Title is empty.</span>";
+            setTimeout(function(){
+                alerts.innerText = "";
+                alerts.style.display = "none";
+            }, 3000)
         }
     }
     catch (error) {
         console.error(error);
     }
-    finally {
-        let title = document.getElementById('content');
-        title.value = "";
-        let inputTasks = document.getElementById("inputTask");
-        task_array.splice(0, task_array.length);
-        task_counter['counter'] = 1;
-        task_array = [1];
-
-        let textarea = document.createElement("textarea");
-        textarea.type = "text";
-        textarea.className = "textarea";
-        textarea.placeholder = 'List item';
-        textarea.setAttribute("id", 'task1');
-
-        let spanClose = document.createElement("span");
-        spanClose.setAttribute("id", "span1");
-        spanClose.className = "spanClose";
-        spanClose.setAttribute("onclick", "inputAndSpanRemover(1)");
-        spanClose.textContent = "❌";
-
-        textarea.addEventListener("keydown", function (event) {
-            if (event.keyCode == 13 && !event.shiftKey) {
-                event.preventDefault();
-                taskadder();
-            }
-            else if (event.keyCode == 13 && event.shiftKey) {
-                this.value += "\n";
-                return false;
-            }
-        })
-        inputTasks.innerHTML = ""
-        inputTasks.appendChild(textarea);
-        inputTasks.appendChild(spanClose);
-        let maingrid = document.getElementById("maingrid");
-        maingrid.style.height = "auto";
-        console.log("done")
+    finally{
+        let sendnote = document.getElementById("submit");
+        sendnote.removeAttribute("disabled");
     }
 }
 function logoutUser() {
     window.location.href = "/logout";
 }
+
+async function deleteUser(){
+    let url = "/profile";
+    let requestSettings = {
+        "method": "POST",
+        "headers": { "Content-Type": "application/json" }};
+    let response = await fetcher(url, requestSettings);
+    if(response.success === true){
+        logoutUser();
+    }
+    }
+    

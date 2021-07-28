@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, session, redirect, jsonify
 from models.models import Users, Tasks, Notes
 from main import app
-from configuration.config import pattern
+from configuration.config import pattern, re
 
 
 # login
@@ -16,6 +16,8 @@ def login():
             return jsonify({"success": True})
         else:
             return jsonify({"success": False})
+    if session.get('current_user_id'):
+        return redirect(url_for('firstpage'))
     return render_template("login.html")
 
 
@@ -39,9 +41,10 @@ def register():
         if current_user:
             return jsonify({"reason": "User Email already in use", 
                             "success": False})
-        if('@' in email and '.' in email and len(email.split("@")[0]) > 10):
-            if(pattern.fullmatch(password) is not None and password == confirmPassword):
-                new_user = Users(email=request.json.get("email"), password=request.json.get("password"))
+        if('@' in email and '.' in email and len(email.split("@")[0]) >= 5):
+            if(re.match(pattern, password) is not None and password == confirmPassword):
+                new_user = Users(email=request.json.get("email"), 
+                                 password=request.json.get("password"))
                 new_user.put()
                 return jsonify({"success": True})
             else:
@@ -67,12 +70,17 @@ def addNote():
             new_task.task_id = new_task.key.id()
             new_task.put()
             alltasks.append(Tasks.get_by_id(new_task.task_id))
-        add_note = Notes(content=request.json.get('content'), author=current_user.key,taskOwner=alltasks).put()
+        add_note = Notes(content=request.json.get('content'), 
+                        author=current_user.key,taskOwner=alltasks).put()
         new_note = Notes.get_by_id(add_note.id())
         alltasks.clear()
         for task in new_note.taskOwner:
-            alltasks.append({"task_id": task.key.id(), "description": task.description, "status": task.status})
-        response_note = {"id": new_note.key.id(), "content": new_note.content, "tasks": alltasks}
+            alltasks.append({"task_id": task.key.id(), 
+                             "description": task.description, 
+                             "status": task.status})
+        response_note = {"id": new_note.key.id(), 
+                         "content": new_note.content, 
+                         "tasks": alltasks}
         return jsonify({"new_note": response_note, "success": True}), 200
 
 # get notes and tasks
@@ -86,8 +94,12 @@ def getNote():
             tasks = note.taskOwner
             alltasks = []
             for task in tasks:
-                alltasks.append({"task_id": task.task_id, "description": task.description, "status": task.status})
-            result.append({"id": note.key.id(), "content": note.content, "tasks": alltasks})
+                alltasks.append({"task_id": task.task_id, 
+                                "description": task.description, 
+                                "status": task.status})
+            result.append({"id": note.key.id(), 
+                           "content": note.content, 
+                           "tasks": alltasks})
         return jsonify({"result": result, "success": True})
     return redirect(url_for('login'))
 
@@ -108,8 +120,12 @@ def updateNote(id):
         noteToUpdate.put()
         alltasks = []
         for task in noteToUpdate.taskOwner:
-            alltasks.append({"task_id": task.task_id, "description": task.description, "status": task.status})
-        response_note = {"id": noteToUpdate.key.id(), "content": noteToUpdate.content, "tasks": alltasks}
+            alltasks.append({"task_id": task.task_id, 
+                             "description": task.description, 
+                             "status": task.status})
+        response_note = {"id": noteToUpdate.key.id(), 
+                         "content": noteToUpdate.content, 
+                         "tasks": alltasks}
         return jsonify({"result": response_note, "success": True})
     elif(current_user and request.method == "DELETE"):
         noteToUpdate = Notes.get_by_id(id)
@@ -130,8 +146,12 @@ def updateTodo(noteid, todoid):
         noteToUpdate.put()
         alltasks = []
         for task in noteToUpdate.taskOwner:
-            alltasks.append({"task_id": task.task_id, "description": task.description, "status": task.status})
-        response_note = {"id": noteToUpdate.key.id(), "content": noteToUpdate.content, "tasks": alltasks}
+            alltasks.append({"task_id": task.task_id, 
+                             "description": task.description, 
+                             "status": task.status})
+        response_note = {"id": noteToUpdate.key.id(), 
+                         "content": noteToUpdate.content, 
+                         "tasks": alltasks}
         return jsonify({"result": response_note, "success": True})
     elif(current_user and request.method == "DELETE"):
         noteToUpdate = Notes.get_by_id(noteid)
@@ -141,8 +161,12 @@ def updateTodo(noteid, todoid):
         noteToUpdate.put()
         alltasks = []
         for task in noteToUpdate.taskOwner:
-            alltasks.append({"task_id": task.task_id, "description": task.description, "status": task.status})
-        response_note = {"id": noteToUpdate.key.id(), "content": noteToUpdate.content, "tasks": alltasks}
+            alltasks.append({"task_id": task.task_id, 
+                             "description": task.description, 
+                             "status": task.status})
+        response_note = {"id": noteToUpdate.key.id(), 
+                        "content": noteToUpdate.content, 
+                        "tasks": alltasks}
         return jsonify({"result": response_note, "success": True})
     return jsonify({"Authorization Error": "Invalid credentials"})
 
@@ -159,10 +183,30 @@ def statusupdate(noteid, todoid):
         noteToUpdate.put()
         alltasks = []
         for task in noteToUpdate.taskOwner:
-            alltasks.append({"task_id": task.task_id, "description": task.description, "status": task.status})
-        response_note = {"id": noteToUpdate.key.id(), "content": noteToUpdate.content, "tasks": alltasks}
+            alltasks.append({"task_id": task.task_id, 
+                             "description": task.description, 
+                             "status": task.status})
+        response_note = {"id": noteToUpdate.key.id(), 
+                         "content": noteToUpdate.content, 
+                         "tasks": alltasks}
         return jsonify({"result": response_note, "success": True})
     return jsonify({"Authorization Error": "Invalid credentials"})
+
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    current_user = Users.get_by_id(session.get('current_user_id'))
+    if current_user and request.method == "POST":
+        notes = Notes.query().filter(Notes.author == current_user.key).fetch()
+        for note in notes:
+            for task in note.taskOwner:
+                task = Tasks.get_by_id(task.task_id)
+                print(task)
+                task.key.delete()
+            print(note)
+            note.key.delete()
+        current_user.key.delete()
+        return jsonify({"success": True})
+    return render_template("profile.html", user_name = current_user.email.split("@")[0])
 
 @app.route("/logout", methods=["GET"])
 def logout():
