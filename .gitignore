@@ -1,20 +1,16 @@
 #backend
 
-backend/venv
-backend/__pycache__
+venv
+__pycache__
 
-backend/configuration/__pycache__
-backend/configuration/config.py
+configuration/__pycache__
+configuration/config.py
 
-backend/DATA-DIR
-backend/models/__pycache__
+DATA-DIR
+models/__pycache__
 
-backend/views/__pycache__
-backend/.gcloudignore
+views/__pycache__
+.gcloudignore
 
 #frontend
-frontend/app/node_modules
-frontend/app/build
-frontend/app/.gcloudignore
-frontend/app/README.md 
-.vscode
+node_modules
