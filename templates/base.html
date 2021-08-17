@@ -1,0 +1,15 @@
+<html>
+
+<head>
+    {% block head %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% endblock head %}
+</head>
+
+<body>
+    {% block body %}
+    {% endblock body %}
+    <script type="text/javascript" defer src="{{ url_for('static', filename='js/operations.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+{% include "base.html" %}
+
+{% block head %}
+<title>
+    Login
+</title>
+{% endblock head %}
+
+{% block body %}
+<br/>
+<h1 style="text-align: center;">Todo App</h1>
+
+<div style="display: block; height: 25px;"></div>
+<div class="alerts" id="alerts"></div>
+<div style="display: block; height: 50px;"></div>
+<div style="left: 45%; position: absolute;">
+    <form name="loginForm">
+        Email
+        <div style="height: 10px;"></div>
+        <input type="email" name="email" id="loginEmail" autocomplete="off" required/>
+        <div style="height: 20px;"></div>
+        Password
+        <div style="height: 10px;"></div>
+        <input type="password" name="password" id="loginPassword" autocomplete="off" required />
+        <div style="height: 10px;"></div>
+        <button type="button" id="loginSubmit" class="primary-btn">Login</button>
+    </form>
+</div>
+
+<div style="display: block; height: 180px;"></div>
+<h3 style="text-align:center;">Create a New User <a href="{{ url_for('register') }}">Register</a></h3>
+{% endblock body %}
