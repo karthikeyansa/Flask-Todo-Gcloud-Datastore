@@ -4,18 +4,21 @@ import {API} from "../Apiservice";
 
 window.completedTasks = 0;
 window.ongoingTasks = 0;
+window.note = {};
 
 function NotesViewer(props){
 
-    const [note, setNote] = useState("");
+    const [note] = useState(props.note);
+    const [noteContent, setNoteContent] = useState("");
     const [newTask, setNewtask] = useState("");
+
 
     useEffect(()=>{
         countKeeper(window.completedTasks, window.ongoingTasks);
     },[])
 
     const countKeeper = (completedTasks, ongoingTasks) =>{
-        props.note.tasks.forEach(task => {
+        note.tasks.forEach(task => {
             if(task.status === false){
                 ongoingTasks += 1;
             }
@@ -23,7 +26,8 @@ function NotesViewer(props){
                 completedTasks += 1;
             }
             window.ongoingTasks = ongoingTasks; 
-            window.completedTasks = completedTasks; 
+            window.completedTasks = completedTasks;
+            window.note = props.note;
         })
         let ongoingTasksCount = document.getElementById("incompleteTaskCount");
         if(ongoingTasksCount) ongoingTasksCount.innerText = `❌ Ongoing (${window.ongoingTasks})`;
@@ -36,11 +40,11 @@ function NotesViewer(props){
     }
 
     const noteContentarea = async(event) =>{
-        if(note !== ""){
+        if(noteContent !== ""){
             try{
-                let response = await API.UpdateNoteandTaskcontent({note_id: props.note.id, content: note});
+                let response = await API.UpdateNoteandTaskcontent({note_id: note.id, content: noteContent});
                 if(response.success === true){
-                    setNote("");
+                    window.note = response.result;
                     let alerts = document.getElementById("alerts");
                     alerts.style.display = "block";
                     alerts.style.backgroundColor = "green";
@@ -48,6 +52,7 @@ function NotesViewer(props){
                     setTimeout(()=>{
                         alerts.style.display = "none"
                     }, 1000)
+                    setNoteContent("");
                 }
             }
             catch(error){
@@ -56,8 +61,9 @@ function NotesViewer(props){
         }
         else if(newTask !== ""){
             try{
-                let response = await API.UpdateNoteandTaskcontent({note_id: props.note.id, description: newTask});
+                let response = await API.UpdateNoteandTaskcontent({note_id: note.id, description: newTask});
                 if(response.success === true){
+                    window.note = response.result;
                     response.result.tasks.filter((task)=>{
                     if(task.description === newTask){
                         let incompleteTasks = document.getElementById("incompleteTasks");
@@ -66,7 +72,7 @@ function NotesViewer(props){
                         taskStatusButton.setAttribute("class", "modalIcon");
                         taskStatusButton.setAttribute("id", `span${task.task_id}`);
                         taskStatusButton.addEventListener("click", function(event){
-                            checkStatus(props.note.id, task.task_id, event.target.innerText)
+                            checkStatus(note.id, task.task_id, event.target.innerText)
                         })
                         taskStatusButton.innerText = "❌";
                         
@@ -75,7 +81,7 @@ function NotesViewer(props){
                         taskDescription.setAttribute("id", `descript${task.task_id}`);
                         taskDescription.innerHTML = newTask;
                         taskDescription.addEventListener("blur", function(){
-                            noteTaskarea(props.note.id, task.task_id)
+                            noteTaskarea(note.id, task.task_id)
                         })  
                         taskDescription.addEventListener("focusin", function(){
                             taskDescription.style.height = "100px";
@@ -87,7 +93,7 @@ function NotesViewer(props){
                         taskDeleteButton.setAttribute("class", "modalIcon");
                         taskDeleteButton.innerText = "🗑️";
                         taskDeleteButton.addEventListener("click", function(){
-                            taskRemover(props.note.id, task.task_id)
+                            taskRemover(note.id, task.task_id)
                         })
     
                         incompleteTasks.appendChild(taskStatusButton);
@@ -117,9 +123,10 @@ function NotesViewer(props){
     }
 
     const closeModal = () => {
-        props.ModalClosed();
         window.completedTasks = 0;
         window.ongoingTasks = 0;
+        props.ModalClosed(window.note);
+
     }
     return(
         <React.Fragment>
@@ -129,19 +136,19 @@ function NotesViewer(props){
             <br />
             <div className="noteViewerGrid">
                 <textarea className="noteContentTextarea" id="NoteContent" 
-                          onBlur={noteContentarea} onChange={(e)=>setNote(e.target.value)}>{props.note.content}</textarea>
+                          onBlur={noteContentarea} onChange={(e)=>setNoteContent(e.target.value)} defaultValue={note.content}></textarea>
                 <div className="ongoingTasks"  id="incompleteTaskCount"></div>
                 <div className="categoryTasks" id="incompleteTasks">
-                    {props.note.tasks && props.note.tasks.filter((task)=>task.status === false).map((task)=>{
+                    {note.tasks && note.tasks.filter((task)=>task.status === false).map((task)=>{
                         return(
-                        <React.Fragment>
+                        <React.Fragment key={task.task_id}>
                             <span id={`span${task.task_id}`} style={{textAlign: "center"}} className="modalIcon" 
-                                    onClick={(e) => {checkStatus(props.note.id, task.task_id, e.target.innerText)}}>❌</span>
+                                    onClick={(e) => {checkStatus(note.id, task.task_id, e.target.innerText)}}>❌</span>
                             <textarea className="taskTextarea" 
-                                        onBlur={()=>noteTaskarea(props.note.id, task.task_id)} 
-                                        onSelect={expandTextarea} id={`descript${task.task_id}`}>{task.description}</textarea>
+                                        onBlur={()=>noteTaskarea(note.id, task.task_id)} 
+                                        onSelect={expandTextarea} id={`descript${task.task_id}`} defaultValue={task.description}></textarea>
                             <span id={`trash${task.task_id}`} className="modalIcon" 
-                                    onClick={()=>taskRemover(props.note.id, task.task_id)}>🗑️</span>
+                                    onClick={()=>taskRemover(note.id, task.task_id)}>🗑️</span>
                         </React.Fragment>
                         )
                     })}
@@ -149,24 +156,27 @@ function NotesViewer(props){
                 <br/>
                 <div className="newTaskTextarea" style={{height: "55px"}}>
                     <textarea className="newtexareaPadding" style={{height: "50px"}} 
-                              placeholder="Add new task here." value={newTask} 
-                              onChange={(e)=>{setNewtask(e.target.value)}} ></textarea>
-                              <button className="newNoteButtonAccept success-btn" onClick={noteContentarea} style={{fontSize:"10px"}}>Add</button>
-                              <button className="newNoteButtonClear danger-btn" onClick={(e)=>setNewtask("")} style={{fontSize:"10px"}}>Cancel</button>
+                              placeholder="Add new task here." onChange={(e)=>{setNewtask(e.target.value)}} value={newTask}></textarea>
+                    <span>&nbsp;</span>
+                    <div className="newTaskButtonGrid">
+                        <button className="newNoteButtons success-btn" onClick={noteContentarea}>Add</button>
+                        <span style={{height:"0px"}}>&nbsp;</span>
+                        <button className="newNoteButtons danger-btn" onClick={(e)=>setNewtask("")}>Cancel</button>
+                    </div>
                 </div>
                 <br />
                 <div className="completedTasks" id="completeTaskCount"></div>
                 <div className="categoryTasks" id="completeTasks">
-                    {props.note.tasks && props.note.tasks.filter((task)=>task.status === true).map((task)=>{
+                    {note.tasks && note.tasks.filter((task)=>task.status === true).map((task)=>{
                         return(
-                        <React.Fragment>
+                        <React.Fragment key={task.task_id}>
                             <span id={`span${task.task_id}`} className="modalIcon"
-                                    onClick={(e) => {checkStatus(props.note.id, task.task_id, e.target.innerText)}}>✔</span>
+                                    onClick={(e) => {checkStatus(note.id, task.task_id, e.target.innerText)}}>✔</span>
                             <textarea className="taskTextarea" 
-                                        onBlur={()=>noteTaskarea(props.note.id, task.task_id)} 
-                                        onSelect={expandTextarea} id={`descript${task.task_id}`}>{task.description}</textarea>
+                                        onBlur={()=>noteTaskarea(note.id, task.task_id)} 
+                                        onSelect={expandTextarea} id={`descript${task.task_id}`} defaultValue={task.description}></textarea>
                             <span id={`trash${task.task_id}`} className="modalIcon" 
-                                    onClick={()=>taskRemover(props.note.id, task.task_id)}>🗑️</span>
+                                    onClick={()=>taskRemover(note.id, task.task_id)}>🗑️</span>
                         </React.Fragment>
                         )
                     })}
@@ -190,6 +200,7 @@ async function checkStatus(note_id, task_id, status){
         console.error(error);
     }
     if(response.success === true){
+        window.note = response.result;
         let taskStatusButton = document.getElementById(`span${task_id}`);
         let taskdescript = document.getElementById(`descript${task_id}`);
         let trashButton = document.getElementById(`trash${task_id}`);
@@ -235,6 +246,7 @@ async function taskRemover(note_id, task_id){
     try{
         let response = await API.RemoveTask({note_id: note_id, task_id: task_id});
         if(response.success === true){
+            window.note = response.result;
             let taskStatusButton = document.getElementById(`span${task_id}`);
             let taskdescript = document.getElementById(`descript${task_id}`);
             let taskDeleteButton = document.getElementById(`trash${task_id}`);
@@ -273,6 +285,7 @@ async function noteTaskarea(note_id=0, task_id=0){
         try{
             let response = await API.UpdateTaskDescription({note_id: note_id, task_id: task_id, description: taskarea.value});
             if(response.success === true){
+                window.note = response.result;
                 let alerts = document.getElementById("alerts");
                 alerts.style.display = "block";
                 alerts.style.backgroundColor = "green";

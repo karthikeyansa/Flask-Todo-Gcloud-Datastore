@@ -35,11 +35,14 @@ function NotesCreator(props){
     return (
         <React.Fragment>
             <h1 style={{textAlign:"center"}}>Welcome to Notes</h1>
-            <button onClick={profileViewer} className="primary-btn" 
-                    style={{right:"15%", position:"absolute"}}>Profile</button>
-            <button onClick={logoutUser} className="danger-btn" 
-                    style={{right:"10%", position:"absolute"}}>Logout</button>
-
+            <div className="options">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <button onClick={profileViewer} className="primary-btn">Profile</button>
+                <span>&nbsp;</span>
+                <button onClick={logoutUser} className="danger-btn">Logout</button>
+                <span>&nbsp;</span>
+            </div>
             <div style={{display:"block", height:"25px"}}></div>
             <div className="alerts" id="alerts"></div>
             <div style={{display:"block", height:"40px"}}></div>
