@@ -65,7 +65,7 @@ function NotesGrid(props){
                     return(
                     <React.Fragment key={note.id}>
                         <div className="displaygridcell" id={note.id}>
-                            <div style={{cursor: "pointer"}} onClick={selectedNote(note)}>
+                            <div style={{cursor: "pointer"}} onClick={selectedNote(note)} id="noteContent">
                                 {note.content}
                             </div>
                                 {note.tasks && note.tasks.forEach((task)=>{
@@ -78,7 +78,7 @@ function NotesGrid(props){
                                 })}
                             <div>
                                 <span className="danger-btn" onClick={NoteRemover(note.id)}>🗑️</span>&nbsp;
-                                <span>Status: ❌Ongoing({inCompletedTasks}) <span style={{color: "lightgreen"}} >✔</span>Completed({completedTasks})</span>
+                                <span id="statusHolder">Status: ❌Ongoing({inCompletedTasks}) <span style={{color: "lightgreen"}} >✔</span>Completed({completedTasks})</span>
                             </div>
                         </div>
                     </React.Fragment>
