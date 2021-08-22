@@ -1,7 +1,8 @@
-import React from 'react'
-import { shallow } from 'enzyme'
+import React from 'react';
+import { shallow } from 'enzyme';
 
-import NotesViewer from '../NotesViewer'
+import NotesViewer from '../NotesViewer';
+import renderer from 'react-test-renderer';
 
 describe('NotesViewer', () => {
   it('should render', () => {
@@ -41,12 +42,20 @@ describe('NotesViewer', () => {
 })
 
 describe('NotesViewer', () => {
-  it('New Task Textarea', () => {
-    const note = {id: 1, content: "Hello world", 
+  const note = {id: 1, content: "Hello world", 
                   tasks: [{task_id: 1, description: "this is task 1", status: true}, 
-                          {task_id: 2, description: "this is task 2", status: false}]}
+                          {task_id: 2, description: "this is task 2", status: false}]};
+  it('New Task Textarea', () => {
       const wrapper = shallow(<NotesViewer note={note} />);
       expect(wrapper.find(".noteViewerGrid")).toBeTruthy();
       expect(wrapper.find(".noteViewerGrid").find("#newTaskTextarea")).toBeTruthy();
   })
+})
+
+describe('NotesViewer', () => {
+  it('should render without crashing as per in snapshot', () => {
+    const tree = renderer.create(<NotesViewer note={note}/>).toJSON();
+    expect(tree).toMatchSnapshot();
+  })
+
 })

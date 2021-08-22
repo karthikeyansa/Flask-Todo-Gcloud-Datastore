@@ -1,7 +1,14 @@
-import React from 'react'
-import { shallow } from 'enzyme'
+import React from 'react';
+import { shallow } from 'enzyme';
+import NoteCreator from '../NotesCreator';
+import renderer from 'react-test-renderer';
 
-import NoteCreator from '../NotesCreator'
+const simulateOnChangeInput = (wrapper, inputSelector, newValue) =>{
+    wrapper.find(inputSelector).first().simulate('change', {
+        target: { value: newValue},
+    })
+    return wrapper.find(inputSelector).first();
+}
 
 describe('NoteCreator', () => {
   it('should render', () => {
@@ -42,5 +49,20 @@ describe('NoteCreator', () => {
         expect(wrapper.find("#maingrid").find("#inputTask").find("task1")).toBeTruthy();
         expect(wrapper.find("#maingrid").find("#inputTask")).toBeTruthy();
         expect(wrapper.find("#maingrid").find("#button")).toBeTruthy();
+    });
+
+    it('maingrids Div', () => {
+        const wrapper = shallow(<NoteCreator />);
+        const content = simulateOnChangeInput(wrapper, "div.maingrid input#content", "hello world");
+        expect(content.props().value).toEqual("hello world");
+        const addNoteButton = wrapper.find("div.maingrid button#submit").first();
+        expect(addNoteButton.text()).toEqual("➕Add to notes");
+    })
+})
+
+describe('NoteCreator', () => {
+    it('should render without crashing as per in snapshot NoteCreator', () => {
+        const tree = renderer.create(<NoteCreator />).toJSON();
+        expect(tree).toMatchSnapshot();
     })
 })

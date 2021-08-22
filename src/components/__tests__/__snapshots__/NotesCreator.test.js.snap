@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NoteCreator should render without crashing as per in snapshot NoteCreator 1`] = `
+Array [
+  <h1
+    style={
+      Object {
+        "textAlign": "center",
+      }
+    }
+  >
+    Welcome to Notes
+  </h1>,
+  <div
+    className="options"
+  >
+    <span>
+       
+    </span>
+    <span>
+       
+    </span>
+    <button
+      className="primary-btn"
+      onClick={[Function]}
+    >
+      Profile
+    </button>
+    <span>
+       
+    </span>
+    <button
+      className="danger-btn"
+      onClick={[Function]}
+    >
+      Logout
+    </button>
+    <span>
+       
+    </span>
+  </div>,
+  <div
+    style={
+      Object {
+        "display": "block",
+        "height": "25px",
+      }
+    }
+  />,
+  <div
+    className="alerts"
+    id="alerts"
+  />,
+  <div
+    style={
+      Object {
+        "display": "block",
+        "height": "40px",
+      }
+    }
+  />,
+  <h5
+    style={
+      Object {
+        "textAlign": "center",
+      }
+    }
+  >
+    Add here.
+  </h5>,
+  <div
+    className="maingrid"
+    id="maingrid"
+  >
+    <input
+      className="input"
+      id="content"
+      name="content"
+      onChange={[Function]}
+      placeholder="Title"
+      required={true}
+      type="text"
+      value=""
+    />
+     
+    <div
+      id="inputTask"
+    >
+      <textarea
+        className="textarea"
+        id="task1"
+        onKeyDown={[Function]}
+        placeholder="List item"
+        type="text"
+      />
+      <span
+        className="spanClose"
+        id="span1"
+        onClick={[Function]}
+      >
+        ❌
+      </span>
+    </div>
+    <br />
+    <button
+      className="primary-btn"
+      id="submit"
+      onClick={[Function]}
+      title="click to add to notes"
+    >
+      ➕Add to notes
+    </button>
+  </div>,
+]
+`;
