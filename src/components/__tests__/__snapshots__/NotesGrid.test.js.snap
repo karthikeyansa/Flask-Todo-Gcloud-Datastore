@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotesGrid should render without crashing as per in snapshot NotesGrid 1`] = `
+<div
+  className="displaygrid"
+  id="displaygrid"
+/>
+`;

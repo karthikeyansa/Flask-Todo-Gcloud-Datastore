@@ -6,27 +6,37 @@ function NotesGrid(props){
     const [notes, setNotes] = useState(props.Newnote);
 
     useEffect(()=>{
-        async function notesChecker(){
-            try{
-                if(props.Newnote){
-                    setNotes([props.Newnote, ...notes]);
+        if(props.pushUpdatedNote && props.Newnote === null){
+            props.allNotesData.map((note, idx) => {
+                if(note.id === props.pushUpdatedNote.id){
+                    props.allNotesData[idx] = props.pushUpdatedNote;
                 }
-                else{
-                    let response = await API.GetNotes();
-                    if(response.success === true){
-                        setNotes(response.result);
-                    }
-                }
-            }
-            catch(error){
-                console.error(error);
+            })
+            setNotes(props.allNotesData);
+        }
+        else if(props.Newnote){
+            setNotes([props.Newnote, ...notes]);
+        }
+        else{
+            notesChecker();
+        }
+    }, [props.Newnote, props.allNotesData])
+
+    async function notesChecker(){
+        try{
+            let response = await API.GetNotes();
+            if(response.success === true){
+                setNotes(response.result);
             }
         }
-        notesChecker();   
-    }, [props.Newnote])
+        catch(error){
+            console.log(error);
+        }
+    }
 
     const selectedNote = (note) => (event) =>{
         props.NoteSelected(note);
+        props.notesData(notes);
     } 
 
     const NoteRemover = (id) => (event) =>{
@@ -39,7 +49,7 @@ function NotesGrid(props){
                 }
             }
             catch(error){
-                console.error(error);
+                console.log(error);
             }
         }
         deleteNote();
@@ -47,15 +57,14 @@ function NotesGrid(props){
 
     return(
         <React.Fragment>
-            <div style={{display: "block",height: "100px"}}></div>
             <div className="displaygrid" id="displaygrid">
                 {notes && notes.map((note)=>{
                     let completedTasks = 0;
                     let inCompletedTasks = 0;
                     return(
-                    <div key={note.id}>
+                    <React.Fragment key={note.id}>
                         <div className="displaygridcell" id={note.id}>
-                            <div style={{cursor: "pointer"}} onClick={selectedNote(note)}>
+                            <div style={{cursor: "pointer"}} onClick={selectedNote(note)} id="noteContent">
                                 {note.content}
                             </div>
                                 {note.tasks && note.tasks.forEach((task)=>{
@@ -68,10 +77,10 @@ function NotesGrid(props){
                                 })}
                             <div>
                                 <span className="danger-btn" onClick={NoteRemover(note.id)}>🗑️</span>&nbsp;
-                                <span>Status: ❌Ongoing({inCompletedTasks}) <span style={{color: "lightgreen"}} >✔</span>Completed({completedTasks})</span>
+                                <span id="statusHolder">Status: ❌Ongoing({inCompletedTasks}) <span style={{color: "lightgreen"}} >✔</span>Completed({completedTasks})</span>
                             </div>
                         </div>
-                    </div>
+                    </React.Fragment>
                     )
                 })}
             </div>
