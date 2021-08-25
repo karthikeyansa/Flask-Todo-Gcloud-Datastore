@@ -181,10 +181,10 @@ describe("NoteViewer", () => {
 })
 
 
-// describe('NotesViewer', () => {
-//   it('should render without crashing as per in snapshot', () => {
-//     const tree = renderer.create(<NotesViewer note={note}/>).toJSON();
-//     expect(tree).toMatchSnapshot();
-//   })
+describe('NotesViewer', () => {
+  it('should render without crashing as per in snapshot', () => {
+    const tree = renderer.create(<NotesViewer note={note}/>).toJSON();
+    expect(tree).toMatchSnapshot();
+  })
 
-// })
+})
