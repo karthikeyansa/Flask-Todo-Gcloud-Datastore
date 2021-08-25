@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotesViewer should render without crashing as per in snapshot 1`] = `
+Array [
+  <br />,
+  <div
+    className="alerts"
+    id="alerts"
+  />,
+  <button
+    className="modalCloseButton danger-btn"
+    onClick={[Function]}
+  >
+    Close
+  </button>,
+  <br />,
+  <div
+    className="noteViewerGrid"
+  >
+    <textarea
+      className="noteContentTextarea"
+      defaultValue="Hello world"
+      id="NoteContent"
+      onBlur={[Function]}
+      onChange={[Function]}
+    />
+    <div
+      className="ongoingTasks"
+      id="incompleteTaskCount"
+    />
+    <div
+      className="categoryTasks"
+      id="incompleteTasks"
+    >
+      <span
+        className="modalIcon"
+        id="span2"
+        onClick={[Function]}
+        style={
+          Object {
+            "textAlign": "center",
+          }
+        }
+      >
+        ❌
+      </span>
+      <textarea
+        className="taskTextarea"
+        defaultValue="this is task 2"
+        id="descript2"
+        onBlur={[Function]}
+        onSelect={[Function]}
+      />
+      <span
+        className="modalIcon"
+        id="trash2"
+        onClick={[Function]}
+      >
+        🗑️
+      </span>
+    </div>
+    <br />
+    <div
+      className="newTaskTextarea"
+      style={
+        Object {
+          "height": "55px",
+        }
+      }
+    >
+      <textarea
+        className="newtexareaPadding"
+        onChange={[Function]}
+        placeholder="Add new task here."
+        style={
+          Object {
+            "height": "50px",
+          }
+        }
+        value=""
+      />
+      <span>
+         
+      </span>
+      <div
+        className="newTaskButtonGrid"
+      >
+        <button
+          className="newNoteButtons success-btn"
+          onClick={[Function]}
+        >
+          Add
+        </button>
+        <span
+          style={
+            Object {
+              "height": "0px",
+            }
+          }
+        >
+           
+        </span>
+        <button
+          className="newNoteButtons danger-btn"
+          onClick={[Function]}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+    <br />
+    <div
+      className="completedTasks"
+      id="completeTaskCount"
+    />
+    <div
+      className="categoryTasks"
+      id="completeTasks"
+    >
+      <span
+        className="modalIcon"
+        id="span1"
+        onClick={[Function]}
+      >
+        ✔
+      </span>
+      <textarea
+        className="taskTextarea"
+        defaultValue="this is task 1"
+        id="descript1"
+        onBlur={[Function]}
+        onSelect={[Function]}
+      />
+      <span
+        className="modalIcon"
+        id="trash1"
+        onClick={[Function]}
+      >
+        🗑️
+      </span>
+    </div>
+  </div>,
+]
+`;
