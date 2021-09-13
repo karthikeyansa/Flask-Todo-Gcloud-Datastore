@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {API} from "../Apiservice";
 
 
@@ -6,6 +6,8 @@ var task_counter = {counter: 1};
 var task_array = [1];
 
 function NotesCreator(props){
+    const [storyContent, setStoryContent] = useState("");
+
     const initalTaskAdder = (event) => {
         if(event.keyCode === 13 && !event.shiftKey){
             event.preventDefault();
@@ -29,17 +31,23 @@ function NotesCreator(props){
         let submit = document.getElementById("submit");
         submit.setAttribute("disabled", true);
         let response = await AddNote();
+        if(response.success === true){
+            setStoryContent("");
+        }
         props.newAddednote({content: response.new_note.content, id: response.new_note.id,  tasks: response.new_note.tasks});
     }
     
     return (
         <React.Fragment>
             <h1 style={{textAlign:"center"}}>Welcome to Notes</h1>
-            <button onClick={profileViewer} className="primary-btn" 
-                    style={{right:"15%", position:"absolute"}}>Profile</button>
-            <button onClick={logoutUser} className="danger-btn" 
-                    style={{right:"10%", position:"absolute"}}>Logout</button>
-
+            <div className="options">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <button onClick={profileViewer} className="primary-btn">Profile</button>
+                <span>&nbsp;</span>
+                <button onClick={logoutUser} className="danger-btn">Logout</button>
+                <span>&nbsp;</span>
+            </div>
             <div style={{display:"block", height:"25px"}}></div>
             <div className="alerts" id="alerts"></div>
             <div style={{display:"block", height:"40px"}}></div>
@@ -47,7 +55,7 @@ function NotesCreator(props){
             <h5 style={{textAlign:"center"}}>Add here.</h5>
             <div className="maingrid" id="maingrid">
                 <input type="text" className="input" name="content" id="content"
-                       placeholder="Title" required/>&nbsp;
+                       placeholder="Title"  value={storyContent} onChange={(e)=>{setStoryContent(e.target.value)}} required/>&nbsp;
                 <div id="inputTask">
                     <textarea type="text" className="textarea" 
                               placeholder="List item" id="task1"

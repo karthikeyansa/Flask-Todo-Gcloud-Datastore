@@ -59,6 +59,8 @@ async function validateAndLogin(){
     else{
         let alerts = document.getElementById("alerts");
         alerts.style.display = "block";
+        alerts.style.backgroundColor = "red";
+        alerts.style.width = "470px"
         alerts.innerHTML = "Enter a valid email and password!";
         setTimeout(() => {alerts.style.display = "none"}, 3000);
         let loginButton = document.getElementById("loginSubmit");
@@ -156,15 +158,8 @@ async function validateAndRegister(){
     var email = document.getElementById("registerEmail");
     var registerPassword = document.getElementById("registerPassword");
     var confirmPassword = document.getElementById("confirmPassword");
-    var lowerCase = /[a-z]/g;
-    var upperCase = /[A-Z]/g;
-    var numbers = /[0-9]/g;
-    if(email.value !== "" && registerPassword.value !== "" && confirmPassword.value !== ""){
-        if(registerPassword.value.match(lowerCase) && 
-           registerPassword.value.match(upperCase) && 
-           registerPassword.value.match(numbers) &&
-           registerPassword.value.length >= 7)
-        {
+    if(validateEmail(email.value) && registerPassword.value !== "" && confirmPassword.value !== ""){
+        if(validatePassword(registerPassword.value)){
             let requestSettings = {method: "POST", headers: {"Content-Type": "application/json"}, 
                                    body: JSON.stringify({"email": email.value, "password": registerPassword.value})}
             try{
@@ -187,7 +182,7 @@ async function validateAndRegister(){
                 }
             }
             catch(error){
-                console.log(error)
+                console.warn(error)
             }     
             finally{
                 let registerButton = document.getElementById("registerSubmit");
@@ -213,5 +208,40 @@ async function validateAndRegister(){
         setTimeout(() => {alerts.style.display = "none"}, 3000);
         let registerButton = document.getElementById("registerSubmit");
         registerButton.removeAttribute("disabled"); 
+    }
+}
+
+function validateEmail(email){
+    try{
+        var characters = /[a-zA-Z0-0]/g;
+        let personalInfo = email.split("@")[0];
+        let domainInfo = email.split("@")[1];
+        if(personalInfo.length >= 3 && domainInfo.split(".")[0].length >= 3){
+            if(personalInfo.match(characters)){
+                let ext = domainInfo.split(".")[1];
+                if(ext.length >= 2){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    catch{
+        return false;
+    }
+}
+
+function validatePassword(password){
+    try{
+        var lowerCase = /[a-z]/g;
+        var upperCase = /[A-Z]/g;
+        var numbers = /[0-9]/g;
+        if(password.match(lowerCase) && password.match(upperCase) && password.match(numbers) && password.length >= 7){
+            return true;
+        }
+        return false;
+    }
+    catch{
+        return false
     }
 }
